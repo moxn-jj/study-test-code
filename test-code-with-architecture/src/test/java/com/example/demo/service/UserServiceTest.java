@@ -1,16 +1,25 @@
 package com.example.demo.service;
 
+import com.example.demo.exception.CertificationCodeNotMatchedException;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.model.UserStatus;
+import com.example.demo.model.dto.UserCreateDto;
+import com.example.demo.model.dto.UserUpdateDto;
 import com.example.demo.repository.UserEntity;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest // 스프링 부트의 의존성 주입을 위함
 @TestPropertySource("classpath:test-application.properties") // TODO : 없어도 되는 건지 확인
@@ -25,6 +34,11 @@ public class UserServiceTest {
 
     @Autowired
     private UserService userService;
+
+    // spring의 JavaMailSender라는 Bean 객체를 Mock으로 선언된 객체로 덮어쓰기한다.
+    // 이러면 테스트를 실행할 때 MockBean 값이 주입되어 실행된다.
+    @MockBean
+    private JavaMailSender javaMailSender;
 
     @Test
     void getByEmail_은_ACTIVE_상태인_유저를_찾아올_수_있다() {
@@ -74,4 +88,74 @@ public class UserServiceTest {
         }).isInstanceOf(ResourceNotFoundException.class);
     }
 
+    @Test
+    void userCreateDto_를_이용하여_유저를_생성할_수_있다() {
+        // given
+        UserCreateDto userCreateDto = UserCreateDto.builder()
+                .email("moxn1948@gmail.com")
+                .address("Gyeongi")
+                .nickname("moxn1948")
+                .build();
+
+        // create 메소드 안에 있는 메일 발송 코드가 동작했을 때 에러가 나지 않게
+        // 아무일도 하지 않도록 설정한다.
+        BDDMockito.doNothing().when(javaMailSender).send(any(SimpleMailMessage.class));
+
+        // when
+        UserEntity result = userService.create(userCreateDto);
+
+        // then
+        assertThat(result.getId()).isNotNull();
+        assertThat(result.getStatus()).isEqualTo(UserStatus.PENDING);
+        // assertThat(result.getCertificationCode()).isEqualTo("FIXME : 현재는 테스트할 방법이 없다.");
+    }
+
+
+    @Test
+    void userUpdateDto_를_이용하여_유저를_수정할_수_있다() {
+        // given
+        UserUpdateDto userUpdateDto = UserUpdateDto.builder()
+                .address("Incheon")
+                .nickname("moxn1948-1")
+                .build();
+
+        // when
+        UserEntity result = userService.update(1, userUpdateDto);
+
+        // then
+        assertThat(result.getAddress()).isEqualTo("Incheon");
+        assertThat(result.getNickname()).isEqualTo("moxn1948-1");
+    }
+    @Test
+    void user_를_로그인_시키면_마지막_로그인_시간이_변경된다() {
+        // given
+        // when
+        userService.login(1);
+
+        // then
+        UserEntity userEntity = userService.getById(1);
+        assertThat(userEntity.getLastLoginAt()).isGreaterThan(0L); // 우선 기본 값인 0보다 크다는 것으로 테스트
+        // assertThat(userEntity.getLastLoginAt()).isEqualTo("FIXME : 현재는 테스트할 방법이 없다.");
+    }
+
+    @Test
+    void PENDING_상태의_사용자는_인증_코드로_ACTIVE_시킬_수_있다() {
+        // given
+        // when
+        userService.verifyEmail(2, "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab");
+
+        // then
+        UserEntity userEntity = userService.getById(2);
+        assertThat(userEntity.getStatus()).isEqualTo(UserStatus.ACTIVE);
+    }
+
+    @Test
+    void PENDING_상태의_사용자는_잘못된_인증_코드를_받으면_에러를_던진다() {
+        // given
+        // when
+        // then
+        assertThatThrownBy(() -> {
+            userService.verifyEmail(2, "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaac");
+        }).isInstanceOf(CertificationCodeNotMatchedException.class);
+    }
 }
