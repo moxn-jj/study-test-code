@@ -41,19 +41,19 @@ public class UserServiceTest {
     private JavaMailSender javaMailSender;
 
     @Test
-    void getByEmail_은_ACTIVE_상태인_유저를_찾아올_수_있다() {
+    void getByEmail은_ACTIVE_상태인_유저를_찾아올_수_있다() {
         // given
-        String email = "moxn1948@gmail.com";
+        String email = "moxn.jj@gmail.com";
 
         // when
         UserEntity result = userService.getByEmail(email);
 
         // then
-        assertThat(result.getNickname()).isEqualTo("moxn1948");
+        assertThat(result.getNickname()).isEqualTo("moxn.jj");
     }
 
     @Test
-    void getByEmail_은_PENDING_상태인_유저를_찾아올_수_있다() {
+    void getByEmail은_PENDING_상태인_유저를_찾아올_수_있다() {
         // given
         String email = "moxn1949@gmail.com";
 
@@ -65,7 +65,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void getById_는_ACTIVE_상태인_유저를_찾아올_수_있다() {
+    void getById는_ACTIVE_상태인_유저를_찾아올_수_있다() {
         // given
         long id = 1;
 
@@ -73,11 +73,11 @@ public class UserServiceTest {
         UserEntity result = userService.getById(id);
 
         // then
-        assertThat(result.getNickname()).isEqualTo("moxn1948");
+        assertThat(result.getNickname()).isEqualTo("moxn.jj");
     }
 
     @Test
-    void getById_는_PENDING_상태인_유저를_찾아올_수_있다() {
+    void getById는_PENDING_상태인_유저를_찾아올_수_있다() {
         // given
         long id = 2;
 
@@ -89,12 +89,12 @@ public class UserServiceTest {
     }
 
     @Test
-    void userCreateDto_를_이용하여_유저를_생성할_수_있다() {
+    void userCreateDto를_이용하여_유저를_생성할_수_있다() {
         // given
         UserCreateDto userCreateDto = UserCreateDto.builder()
-                .email("moxn1948@gmail.com")
+                .email("moxn.jj@gmail.com")
                 .address("Gyeongi")
-                .nickname("moxn1948")
+                .nickname("moxn.jj")
                 .build();
 
         // create 메소드 안에 있는 메일 발송 코드가 동작했을 때 에러가 나지 않게
@@ -112,11 +112,11 @@ public class UserServiceTest {
 
 
     @Test
-    void userUpdateDto_를_이용하여_유저를_수정할_수_있다() {
+    void userUpdateDto를_이용하여_유저를_수정할_수_있다() {
         // given
         UserUpdateDto userUpdateDto = UserUpdateDto.builder()
                 .address("Incheon")
-                .nickname("moxn1948-1")
+                .nickname("moxn.jj-1")
                 .build();
 
         // when
@@ -124,10 +124,10 @@ public class UserServiceTest {
 
         // then
         assertThat(result.getAddress()).isEqualTo("Incheon");
-        assertThat(result.getNickname()).isEqualTo("moxn1948-1");
+        assertThat(result.getNickname()).isEqualTo("moxn.jj-1");
     }
     @Test
-    void user_를_로그인_시키면_마지막_로그인_시간이_변경된다() {
+    void user를_로그인_시키면_마지막_로그인_시간이_변경된다() {
         // given
         // when
         userService.login(1);
