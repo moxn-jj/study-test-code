@@ -42,6 +42,7 @@ public class UserController {
     public ResponseEntity<Void> verifyEmail(
         @PathVariable long id,
         @RequestParam String certificationCode) {
+
         userService.verifyEmail(id, certificationCode);
         return ResponseEntity.status(HttpStatus.FOUND)
             .location(URI.create("http://localhost:3000"))
@@ -53,6 +54,7 @@ public class UserController {
         @Parameter(name = "EMAIL", in = ParameterIn.HEADER)
         @RequestHeader("EMAIL") String email // 일반적으로 스프링 시큐리티를 사용한다면 UserPrincipal 에서 가져옵니다.
     ) {
+
         UserEntity userEntity = userService.getByEmail(email);
         userService.login(userEntity.getId());
         return ResponseEntity
