@@ -11,7 +11,7 @@ import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest // JPA 테스트를 위한 어노테이션
-@Sql("/sql/user-repository-test-data.sql")
+@Sql("/sql/user-repository-test-data.sql") // 기본 데이터 생성
 public class UserRepositoryTest {
 
     @Autowired
