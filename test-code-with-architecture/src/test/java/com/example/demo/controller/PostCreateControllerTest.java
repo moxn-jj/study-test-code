@@ -20,6 +20,7 @@ public class PostCreateControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    // TODO : USER와 같이 채워보기
     @Test
     void 헬스_체크_응답이_200으로_내려온다() throws Exception {
         // 우리 서버에 mockMvc를 통해 api를 get방식으로 호출한다.
