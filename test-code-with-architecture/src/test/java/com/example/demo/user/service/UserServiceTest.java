@@ -2,11 +2,10 @@ package com.example.demo.user.service;
 
 import com.example.demo.common.domain.exception.CertificationCodeNotMatchedException;
 import com.example.demo.common.domain.exception.ResourceNotFoundException;
+import com.example.demo.user.domain.User;
 import com.example.demo.user.domain.UserStatus;
 import com.example.demo.user.domain.UserCreate;
 import com.example.demo.user.domain.UserUpdate;
-import com.example.demo.user.infrastructure.UserEntity;
-import com.example.demo.user.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +46,7 @@ public class UserServiceTest {
         String email = "moxn.jj@gmail.com";
 
         // when
-        UserEntity result = userService.getByEmail(email);
+        User result = userService.getByEmail(email);
 
         // then
         assertThat(result.getNickname()).isEqualTo("moxn.jj");
@@ -71,7 +70,7 @@ public class UserServiceTest {
         long id = 1;
 
         // when
-        UserEntity result = userService.getById(id);
+        User result = userService.getById(id);
 
         // then
         assertThat(result.getNickname()).isEqualTo("moxn.jj");
@@ -103,7 +102,7 @@ public class UserServiceTest {
         BDDMockito.doNothing().when(javaMailSender).send(any(SimpleMailMessage.class));
 
         // when
-        UserEntity result = userService.create(userCreate);
+        User result = userService.create(userCreate);
 
         // then
         assertThat(result.getId()).isNotNull();
@@ -121,7 +120,7 @@ public class UserServiceTest {
                 .build();
 
         // when
-        UserEntity result = userService.update(1, userUpdate);
+        User result = userService.update(1, userUpdate);
 
         // then
         assertThat(result.getAddress()).isEqualTo("Incheon");
@@ -134,9 +133,9 @@ public class UserServiceTest {
         userService.login(1);
 
         // then
-        UserEntity userEntity = userService.getById(1);
-        assertThat(userEntity.getLastLoginAt()).isGreaterThan(0L); // 우선 기본 값인 0보다 크다는 것으로 테스트
-        // assertThat(userEntity.getLastLoginAt()).isEqualTo("FIXME : 현재는 테스트할 방법이 없다.");
+        User user = userService.getById(1);
+        assertThat(user.getLastLoginAt()).isGreaterThan(0L); // 우선 기본 값인 0보다 크다는 것으로 테스트
+        // assertThat(user.getLastLoginAt()).isEqualTo("FIXME : 현재는 테스트할 방법이 없다.");
     }
 
     @Test
@@ -146,8 +145,8 @@ public class UserServiceTest {
         userService.verifyEmail(2, "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab");
 
         // then
-        UserEntity userEntity = userService.getById(2);
-        assertThat(userEntity.getStatus()).isEqualTo(UserStatus.ACTIVE);
+        User user = userService.getById(2);
+        assertThat(user.getStatus()).isEqualTo(UserStatus.ACTIVE);
     }
 
     @Test

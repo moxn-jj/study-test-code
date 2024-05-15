@@ -1,9 +1,9 @@
 package com.example.demo.post.service;
 
 import com.example.demo.common.domain.exception.ResourceNotFoundException;
+import com.example.demo.post.domain.Post;
 import com.example.demo.post.domain.PostCreate;
 import com.example.demo.post.domain.PostUpdate;
-import com.example.demo.post.infrastructure.PostEntity;
 import com.example.demo.post.service.PostService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class PostServiceTest {
     void getById는_존재하는_게시글을_가져온다() {
         // given
         // when
-        PostEntity result = postService.getById(1);
+        Post result = postService.getById(1);
 
         // then
         assertThat(result.getContent()).isEqualTo("helloworld");
@@ -56,7 +56,7 @@ public class PostServiceTest {
                 .build();
 
         // when
-        PostEntity result = postService.create(postCreate);
+        Post result = postService.create(postCreate);
 
         // then
         assertThat(result.getId()).isNotNull();
@@ -73,7 +73,7 @@ public class PostServiceTest {
                 .build();
 
         // when
-        PostEntity result = postService.update(1, postUpdate);
+        Post result = postService.update(1, postUpdate);
 
         // then
         assertThat(result.getId()).isNotNull();
